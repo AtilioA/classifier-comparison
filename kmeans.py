@@ -7,14 +7,12 @@ from matplotlib.lines import Line2D
 
 # Carregar e lidar com o dataset
 import pandas as pd
-from sklearn.datasets import load_iris
+from sklearn.datasets import load_digits
 
-# Como este dataset possui pouquíssimos outliers e não é o foco,
-# já podemos lidar com a parte algorítmica para a classificação
 class K_Means:
-    # Neste problema, sabemos que existem 3 espécies, portanto k=3
+    # Neste problema, sabemos que existem 10 dígitos, portanto k=10
     # Para tolerância e limite de iterações, utilizaremos valores comumente usados
-    def __init__(self, k=3, tolerancia=0.001, maxIteracoes=300):
+    def __init__(self, k=10, tolerancia=0.001, maxIteracoes=300):
         self.k = k
         self.tolerancia = tolerancia
         self.maxIteracoes = maxIteracoes
@@ -37,12 +35,9 @@ class K_Means:
             for i in range(self.k):
                 self.classificacoes[i] = []
 
-
             for featureSet in data:
                 # Popula a lista com distâncias entre cada observações e os k centroides
-                distancias = [np.linalg.norm(
-                    featureSet - self.centroides[centroide])
-                    for centroide in self.centroides]
+                distancias = [np.linalg.norm(featureSet - self.centroides[centroide]) for centroide in self.centroides]
 
                 # Determina a classificação através da menor distância
                 classificacao = distancias.index(min(distancias))
@@ -81,31 +76,30 @@ class K_Means:
 
 if __name__ == '__main__':
     # Primeiramente, carregamos o dataset da íris
-    iris = load_iris()
-    dfIris = pd.DataFrame(iris['data'], columns=iris['feature_names'])
+    digits = load_digits()
+    dfDigits = pd.DataFrame(digits['data'], columns=digits['feature_names'])
 
     # Separa dados em treino e teste
-    mask = np.random.rand(len(dfIris)) < 0.8
-    dadosTreino = dfIris[mask].values
-    dadosTeste = dfIris[~mask].values
+    mask = np.random.rand(len(dfDigits)) < 0.8
+    dadosTreino = dfDigits[mask].values
+    dadosTeste = dfDigits[~mask].values
 
     # Cores dos clusters
     cores = ["red", "green", "blue"]
 
-    # Temos 4 features: comprimento e largura das sépalas e pétalas
-    # Vamos aglomerar dados de sépalas e pétalas separadamente
+    # Temos 64 features: cada pixel na imagem
     # Visualizando os dados
-    plt.scatter(dfIris.values[:,0], dfIris.values[:,1], marker='.')
+    plt.scatter(dfDigits.values[:,0], dfDigits.values[:,1], marker='.')
     plt.xlabel("Comprimento sépala")
     plt.ylabel("Largura sépala")
-    plt.title("IRIS")
+    plt.title("DIGITS")
     plt.show()
 
-    plt.scatter(dfIris.values[:,2], dfIris.values[:,3], marker='.')
-    plt.xlabel("Comprimento pétala")
-    plt.ylabel("Largura pétala")
-    plt.title("IRIS")
-    plt.show()
+    # plt.scatter(dfDigits.values[:,2], dfDigits.values[:,3], marker='.')
+    # plt.xlabel("Comprimento pétala")
+    # plt.ylabel("Largura pétala")
+    # plt.title("DIGITS")
+    # plt.show()
 
     # Instancia KMeans e ajusta modelo aos dados de treino
     clf = K_Means()
